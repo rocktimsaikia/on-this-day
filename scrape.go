@@ -20,7 +20,13 @@ type Person struct {
   Year int `json:"year"`
 }
 
-func main() {
+type AllEvents struct {
+  HistoryEvents []HistoryEvent `json:"history_events"`
+  Birthdays []Person `json:"birthdays"`
+  Deaths []Person `json:"deaths"`
+}
+
+func Scrape() AllEvents {
   c := colly.NewCollector(
     colly.AllowedDomains("www.timeanddate.com"),
   )
@@ -98,4 +104,10 @@ func main() {
   })
 
   c.Visit("https://www.timeanddate.com/on-this-day/")
+
+  return AllEvents{
+    HistoryEvents: historyEvents,
+    Birthdays: birthdays,
+    Deaths: deaths,
+  }
 }
