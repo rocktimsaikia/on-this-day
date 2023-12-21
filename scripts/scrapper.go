@@ -3,9 +3,12 @@ package scripts
 import (
     "encoding/json"
     "fmt"
+    "os"
+    "time"
 )
 
-func Main() {
+func main() {
+  DATA_DIR := "data"
   monthsAndDays := map[string]int{
     "January": 31,
     "February": 28,
@@ -20,11 +23,37 @@ func Main() {
     "November": 30,
     "December": 31,
   }
+
+  // Create the current data-source sub directory if it doesn't exist
+  currentYear := time.Now().Year()
+  yearDir := fmt.Sprintf("%s/%d", DATA_DIR, currentYear)
+  if _, err := os.Stat(yearDir); os.IsNotExist(err) {
+    os.Mkdir(yearDir, 0755)
+  }
+
   for month, days := range monthsAndDays {
+    monthDir := fmt.Sprintf("%s/%s", yearDir, month)
+    if _, err := os.Stat(monthDir); os.IsNotExist(err) {
+      os.Mkdir(monthDir, 0755)
+    }
     for i:=1; i<=days; i++ {
-      event_data := Scrape(month, i)
-      fmt.Println(json.MarshalIndent(event_data, "", "  "))
-      // TODO: Process and write the data to files in the `data` directory
+      eventData := Scrape(month, i)
+      eventDataJson, err := json.Marshal(eventData)
+
+      if err != nil {
+	fmt.Println("Error marshalling event data", err)
+	return
+      }
+
+      filePath := fmt.Sprintf("%s/%d.json", monthDir, i)
+      err = os.WriteFile(filePath, eventDataJson, 0644)
+
+      if err != nil {
+	fmt.Println("Error writing event data to file", err)
+	return
+      }
+
+      fmt.Printf("Successfully wrote event data to file %s\n", filePath)
     }
   }
 }
