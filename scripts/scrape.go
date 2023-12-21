@@ -1,4 +1,4 @@
-package main
+package scripts
 
 import (
   "fmt"
@@ -26,7 +26,7 @@ type AllEvents struct {
   Deaths []Person `json:"deaths"`
 }
 
-func Scrape() AllEvents {
+func Scrape(month string, day int) AllEvents {
   c := colly.NewCollector(
     colly.AllowedDomains("www.timeanddate.com"),
   )
@@ -103,7 +103,7 @@ func Scrape() AllEvents {
     fmt.Println(string(deathsJson))
   })
 
-  c.Visit("https://www.timeanddate.com/on-this-day/")
+  c.Visit("https://www.timeanddate.com/on-this-day/" + month + "/" + strconv.Itoa(day))
 
   return AllEvents{
     HistoryEvents: historyEvents,
