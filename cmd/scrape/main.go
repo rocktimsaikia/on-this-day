@@ -1,13 +1,13 @@
 package main
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"fmt"
 	"github.com/gocolly/colly"
-	"os"
+	// "os"
 	"strconv"
 	"strings"
-	"time"
+	// "time"
 )
 
 type HistoryEvent struct {
@@ -94,18 +94,9 @@ func Scrape(month string, day int) AllEvents {
 		fmt.Println(err)
 	})
 
-	c.OnScraped(func(r *colly.Response) {
-		fmt.Println("Finished", r.Request.URL)
-		historyEventsJson, _ := json.MarshalIndent(historyEvents, "", "  ")
-		birtdaysJson, _ := json.MarshalIndent(birthdays, "", "  ")
-		deathsJson, _ := json.MarshalIndent(deaths, "", "  ")
-
-		fmt.Println(string(historyEventsJson))
-		fmt.Println(string(birtdaysJson))
-		fmt.Println(string(deathsJson))
-	})
-
 	c.Visit("https://www.timeanddate.com/on-this-day/" + month + "/" + strconv.Itoa(day))
+
+	fmt.Println(historyEvents)
 
 	return AllEvents{
 		HistoryEvents: historyEvents,
@@ -115,7 +106,7 @@ func Scrape(month string, day int) AllEvents {
 }
 
 func main() {
-	DATA_DIR := "../data"
+	// DATA_DIR := "../data"
 	monthsAndDays := map[string]int{
 		"January":   31,
 		"February":  28,
@@ -132,35 +123,38 @@ func main() {
 	}
 
 	// Create the current data-source sub directory if it doesn't exist
-	currentYear := time.Now().Year()
-	yearDir := fmt.Sprintf("%s/%d", DATA_DIR, currentYear)
-	if _, err := os.Stat(yearDir); os.IsNotExist(err) {
-		os.Mkdir(yearDir, 0755)
-	}
+	// currentYear := time.Now().Year()
+	// yearDir := fmt.Sprintf("%s/%d", DATA_DIR, currentYear)
+	// if _, err := os.Stat(yearDir); os.IsNotExist(err) {
+	// 	os.Mkdir(yearDir, 0755)
+	// }
 
 	for month, days := range monthsAndDays {
-		monthDir := fmt.Sprintf("%s/%s", yearDir, month)
-		if _, err := os.Stat(monthDir); os.IsNotExist(err) {
-			os.Mkdir(monthDir, 0755)
-		}
+		// monthDir := fmt.Sprintf("%s/%s", yearDir, month)
+		// if _, err := os.Stat(monthDir); os.IsNotExist(err) {
+		// 	os.Mkdir(monthDir, 0755)
+		// }
 		for i := 1; i <= days; i++ {
-			eventData := Scrape(month, i)
-			eventDataJson, err := json.Marshal(eventData)
+			Scrape(month, i)
+			// eventDataJson, err := json.Marshal(eventData)
 
-			if err != nil {
-				fmt.Println("Error marshalling event data", err)
-				return
-			}
+			// if err != nil {
+			// 	fmt.Println("Error marshalling event data", err)
+			// 	return
+			// }
 
-			filePath := fmt.Sprintf("%s/%d.json", monthDir, i)
-			err = os.WriteFile(filePath, eventDataJson, 0644)
+			// fmt.Println("Event data for", month, i, "is:")
+			// fmt.Println(string(eventDataJson))
 
-			if err != nil {
-				fmt.Println("Error writing event data to file", err)
-				return
-			}
+			// filePath := fmt.Sprintf("%s/%d.json", monthDir, i)
+			// err = os.WriteFile(filePath, eventDataJson, 0644)
 
-			fmt.Printf("Successfully wrote event data to file %s\n", filePath)
+			// if err != nil {
+			// 	fmt.Println("Error writing event data to file", err)
+			// 	return
+			// }
+
+			// fmt.Printf("Successfully wrote event data to file %s\n", filePath)
 		}
 	}
 }

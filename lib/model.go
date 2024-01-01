@@ -1,4 +1,4 @@
-package model
+package lib
 
 import (
 	"gorm.io/gorm"
@@ -21,19 +21,19 @@ type Day struct {
 	DayName string
 }
 
-type Type string
+type EventType string
 
 const (
-	History Type = "history"
-	Birth   Type = "birth"
-	Death   Type = "death"
+	History EventType = "history"
+	Birth   EventType = "birth"
+	Death   EventType = "death"
 )
 
 type Event struct {
 	gorm.Model
-	Type        Type `gorm:"type:enum('history', 'birth', 'death')"`
-	Title       string
-	Description string
+	Type        EventType `gorm:"type:ENUM('history', 'birth', 'death')"`
+	Title       string    `gorm:"unique"`
+	Description string    `gorm:"unique"`
 	YearID      uint
 	MonthID     uint
 	DayID       uint
